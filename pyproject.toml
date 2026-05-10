@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llms-chess-benchmark"
+version = "0.1.0"
+description = "A benchmark for Large Language Models playing chess"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "python-chess",
+    "customtkinter",
+    "langchain-community",
+    "svglib",
+    "reportlab",
+    "pillow",
+]
+
+[project.optional-dependencies]
+gui = [
+    "customtkinter",
+    "svglib",
+    "reportlab",
+    "pillow",
+]
+
+[tool.setuptools]
+packages = {find = {where = ["src"]}}
+package-dir = {"" = "src"}
