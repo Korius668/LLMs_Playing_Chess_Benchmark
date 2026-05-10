@@ -21,3 +21,12 @@ class GameManager:
             return True
         else:
             return False
+        
+def play_move_in_position(model, fen):
+    try:
+        board = chess.Board(fen)
+    except ValueError:
+        return "Invalid FEN"   
+    move = model.get_move(board)
+    
+    return move.uci() if move else "FAILED"
