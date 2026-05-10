@@ -8,4 +8,3 @@ class BasePlayer:
         """Przyjmuje obiekt board, zwraca obiekt Move."""
         raise NotImplementedError
     
-    

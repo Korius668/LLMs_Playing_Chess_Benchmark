@@ -9,14 +9,13 @@ LLAMA = "llama3.1:8b"
 
 
 def main():
-    # 1. Konfiguracja modularna
     player_white = RandomMovePlayer(name="RandomBot")
     # player_black = OllamaPlayer(model_name=LLAMA, name="LLAMA")
     player_black = RandomMovePlayer(name="RandomBot")
-    # 2. Silnik
+
     manager = GameManager(player_white, player_black)
     
-    # 3. GUI (Opcjonalne)
+
     root = ctk.CTk()
     root.title("Chess LLM Benchmark Arena")
     

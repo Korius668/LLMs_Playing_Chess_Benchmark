@@ -6,7 +6,7 @@ from core.player_base import BasePlayer
 class OllamaPlayer(BasePlayer):
     def __init__(self, model_name="llama3", name="Ollama-AI"):
         super().__init__(name)
-        self.llm = Ollama(model=model_name, temperature=0) # Temp 0 dla stabilności
+        self.llm = Ollama(model=model_name, temperature=0) 
         self.pattern = re.compile(r"([a-h][1-8][a-h][1-8][qrbn]?)")
 
     def get_move(self, board: chess.Board) -> chess.Move:
@@ -29,5 +29,5 @@ class OllamaPlayer(BasePlayer):
             move = chess.Move.from_uci(move_str)
             if move in board.legal_moves:
                 return move
-        return None # Manager obsłuży błąd (np. przegrana przez nielegalny ruch)
+        return None
     

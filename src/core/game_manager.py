@@ -20,5 +20,4 @@ class GameManager:
             self.history.append(move.uci())
             return True
         else:
-            # Ruch nielegalny = automatyczna przegrana w benchmarku
             return False
