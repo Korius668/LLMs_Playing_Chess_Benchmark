@@ -12,6 +12,7 @@ dependencies = [
     "customtkinter",
     "langchain-community",
     "langchain-ollama",
+    "langchain",
     "svglib",
     "reportlab",
     "pillow",
