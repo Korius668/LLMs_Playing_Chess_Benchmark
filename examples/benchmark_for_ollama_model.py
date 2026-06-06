@@ -1,48 +1,32 @@
 import pandas as pd
-from dotenv import load_dotenv
-import os
-from tqdm import tqdm
+from argparse import ArgumentParser
 
-from core.game_manager import play_move_in_position
 from players import OllamaPlayer
-from core.evaluate import evaluate_moves
+from benchmark import benchmark
+from langchain_community.cache import SQLiteCache
+import langchain
 
+MIXTRAL = "mixtral:8x7b"
+GEMMA = "gemma2:27b"
+QWEN = "qwen2.5:72b"
+LLAMA = "llama3:3.1b"
 PHI = "phi3:3.8b"
 
-
-load_dotenv()
-stockfish_path = os.getenv("STOCKFISH_PATH")
+MODEL_NAME = PHI
+cache_db_path = "chess_benchmark_cache.db"
+langchain.cache = SQLiteCache(database_path=cache_db_path)
 
 fen_data = pd.read_csv("data/fen_analysis.csv")
 
-model = OllamaPlayer(name="PHI", model_name=PHI, verbose=True)
- 
+
 def main():
-    moves = []
-    fens = []
+    argParser = ArgumentParser(prog=f"benchmark_for_{MODEL_NAME}", description="Benchmarking Ollama model on chess positions.")
+    argParser.add_argument("-l","--limit", type=int, default=1000, help="Number of chess positions to evaluate.")
+    argParser.add_argument("-nc","--ignore_cache", default=True, action='store_false', help="Whether to use caching.")
+    args = argParser.parse_args()
     
-    for index, row in tqdm(fen_data.iterrows(), total=len(fen_data), unit="moves"):
-        if index >= 4000: 
-            break
-        fen = row["FEN"]
-        fens.append(fen)
-        move = play_move_in_position(model, fen)
-        moves.append(move)
-    
-    scores, gains = evaluate_moves(fens, moves, stockfish_path)
-    
-    results = pd.DataFrame({
-        "FEN": fens,
-        "Move": moves,
-        "Score After Move": scores,
-        "Gain": gains
-    })
-    
-    os.makedirs("results", exist_ok=True)
-    results.to_csv("results/phi_model_results.csv", index=False)
-    missing_count = results["Gain"].isna().sum()
-    print("Mean score gain for", model.name,  ":", results["Gain"].mean())
-    print("Illegal moves:", missing_count)
+    model = OllamaPlayer(model_name=MODEL_NAME, verbose=True, cache=args.ignore_cache)
+    benchmark(model, fen_data, results_path=f"results/{MODEL_NAME}_results.csv",  limit=args.limit)
 
 if __name__ == "__main__":
     main()
