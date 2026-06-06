@@ -1,46 +1,23 @@
 import pandas as pd
-from dotenv import load_dotenv
-import os
-from tqdm import tqdm
+from argparse import ArgumentParser
 
-from core.game_manager import play_move_in_position
-from players.random_move_player import RandomMovePlayer
-from core.evaluate import evaluate_moves
+from players import RandomMovePlayer
+from benchmark import benchmark
 
+MODEL_NAME = "random"
 fen_data = pd.read_csv("data/fen_analysis.csv")
 
-load_dotenv()
-stockfish_path = os.getenv("STOCKFISH_PATH")
-
-model = RandomMovePlayer(name="RandomBot")
-
-    
 def main():
-    moves = []
-    fens = []
+    argParser = ArgumentParser(prog=f"benchmark_for_{MODEL_NAME}", description="Benchmarking Random model on chess positions.")
+    argParser.add_argument("-l","--limit", type=int, default=1000, help="Number of chess positions to evaluate.")
+    argParser.add_argument("-nc","--ignore_cache", default=True, action='store_false', help="Whether to use caching.")
+    args = argParser.parse_args()
     
-    for index, row in tqdm(fen_data.iterrows(), total=len(fen_data)):
-        if index >= 100: 
-            break
-        fen = row["FEN"]
-        fens.append(fen)
-        move = play_move_in_position(model, fen)
-        moves.append(move)
+    model = RandomMovePlayer(name=MODEL_NAME)
     
-    scores, gains = evaluate_moves(fens, moves, stockfish_path)
-    
-    results = pd.DataFrame({
-        "FEN": fens,
-        "Move": moves,
-        "Score After Move": scores,
-        "Gain": gains
-    })
-    
-    os.makedirs("results", exist_ok=True)
-    results.to_csv("results/random_model_results.csv", index=False)
-    missing_count = results["Gain"].isna().sum()
-    print("Mean score gain for random model:", -results["Loss"].mean())
-    print("Illegal moves:", missing_count)
+    benchmark(model, fen_data, results_path=f"results/{MODEL_NAME}_model_results.csv", limit=args.limit)
+
+
 
 if __name__ == "__main__":
     main()
