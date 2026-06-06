@@ -1,4 +1,3 @@
-
 import chess
 
 class GameManager:
@@ -26,7 +25,15 @@ def play_move_in_position(model, fen):
     try:
         board = chess.Board(fen)
     except ValueError:
-        return "Invalid FEN"   
-    move = model.get_move(board)
+        return "Invalid FEN"  
     
-    return move.uci() if move else "FAILED"
+    if board.is_game_over():
+        return "[GAME OVER]"
+
+    legal_moves = list(board.legal_moves)
+    if not legal_moves:
+        return "[NO LEGAL MOVES]"
+     
+    move = model.get_move(board, legal_moves)
+    
+    return move.uci()
