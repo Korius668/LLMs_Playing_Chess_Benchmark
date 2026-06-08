@@ -1,5 +1,5 @@
 import inspect
-
+import re
 import chess
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage
@@ -9,19 +9,19 @@ from langchain_core.globals import set_llm_cache
 
 from core.player_base import BasePlayer
 
-cache_db_path = "chess_benchmark_cache.db"
-set_llm_cache(SQLiteCache(database_path=cache_db_path))
 
 class OllamaPlayer(BasePlayer):
     def __init__(self, model_name="llama2", name="Ollama-AI", verbose=False, cache=False):
         super().__init__(name)
         self.verbose = verbose
-
+        safe_name = re.sub(r'[^a-zA-Z0-9_]', '_', model_name)
+        model_specific_cache = SQLiteCache(database_path=f"chess_cache_{safe_name}.db", allowed_objects="messages")
         self.llm = ChatOllama(
+            name = model_name,
             model=model_name,
+            cache= model_specific_cache,
             temperature=0,
             num_predict=32,
-            cache=cache,
             num_gpu=1,
             num_thread=4,
             repeat_penalty=1,

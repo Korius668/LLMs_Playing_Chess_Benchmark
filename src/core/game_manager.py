@@ -34,6 +34,6 @@ def play_move_in_position(model, fen):
     if not legal_moves:
         return "[NO LEGAL MOVES]"
      
-    move = model.get_move(board, legal_moves)
+    move = model.get_move(board)
     
     return move.uci()
