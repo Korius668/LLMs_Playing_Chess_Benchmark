@@ -1,5 +1,6 @@
 import pandas as pd
 from argparse import ArgumentParser
+import re
 
 from players import OllamaPlayer
 from benchmark import benchmark
@@ -9,12 +10,10 @@ import langchain
 MIXTRAL = "mixtral:8x7b"
 GEMMA = "gemma2:27b"
 QWEN = "qwen2.5:72b"
-LLAMA = "llama3:3.1b"
+LLAMA = "llama3.1:8b"
 PHI = "phi3:3.8b"
 
-MODEL_NAME = PHI
-cache_db_path = "chess_benchmark_cache.db"
-langchain.cache = SQLiteCache(database_path=cache_db_path)
+MODEL_NAME = GEMMA
 
 fen_data = pd.read_csv("data/fen_analysis.csv")
 
