@@ -39,7 +39,7 @@ def centipawn_diff(engine, board, board2):
 
 def centipawn_score(engine, board):
     info_after = engine.analyse(board, chess.engine.Limit(time=0.1))
-    after_score = info_after["score"].relative.score(mate_score=10000)
+    after_score = info_after["score"].white().score(mate_score=10000)
 
     return after_score
 
