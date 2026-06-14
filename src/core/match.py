@@ -4,8 +4,7 @@ import random
 import chess
 import chess.engine
 import pandas as pd
-from datetime import datetime
-from pathlib import Path
+
 
 from core.game_manager import GameManager
 from core.evaluate import centipawn_score
@@ -21,13 +20,14 @@ class MatchResult:
         self.result = None
         self.termination_reason = None
         
-    def add_move(self, move_number, move_uci, player_name, time_taken_ms, centipawn_score_value):
+    def add_move(self, move_number, move_uci, player_name, time_taken_ms, centipawn_score_value, board_fen=None):
         self.moves_data.append({
             'move_number': move_number,
             'move_uci': move_uci,
             'player_name': player_name,
             'time_taken_ms': time_taken_ms,
-            'centipawn_score': centipawn_score_value
+            'centipawn_score': centipawn_score_value,
+            'board_fen': board_fen
         })
     
     def to_csv(self, filepath):
@@ -85,28 +85,28 @@ def play_match(white_player, black_player, match_id, stockfish_path=None, max_mo
             
             # Validate and play move
             if move and move in manager.board.legal_moves:
+                # Play the move
+                manager.board.push(move)
+                
                 # Evaluate position if engine available
                 cp_score = None
                 if engine:
                     try:
-                        board_before = manager.board.copy()
-                        manager.board.push(move)
-                        board_after = manager.board.copy()
-                        
-                        cp_score = centipawn_score(engine, board_after)
+                        cp_score = centipawn_score(engine, manager.board)
                     except Exception as e:
                         if verbose:
                             print(f"Warning: Could not evaluate move: {e}")
-                        manager.board.push(move)
-                else:
-                    manager.board.push(move)
+                
+                # Get board FEN after move
+                board_fen = manager.board.fen()
                 
                 match_result.add_move(
                     move_number=move_number,
                     move_uci=move.uci(),
                     player_name=current_player.name,
                     time_taken_ms=time_taken_ms,
-                    centipawn_score_value=cp_score
+                    centipawn_score_value=cp_score,
+                    board_fen=board_fen
                 )
                 
                 if verbose:
