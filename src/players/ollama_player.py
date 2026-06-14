@@ -15,14 +15,13 @@ class OllamaPlayer(BasePlayer):
         super().__init__(name)
         self.verbose = verbose
         safe_name = re.sub(r'[^a-zA-Z0-9_]', '_', model_name)
-        model_specific_cache = SQLiteCache(database_path=f"chess_cache_{safe_name}.db", allowed_objects="messages")
+        model_specific_cache = SQLiteCache(database_path=f"chess_cache_{safe_name}.db") if cache else None
         self.llm = ChatOllama(
-            name = model_name,
             model=model_name,
-            cache= model_specific_cache,
+            cache=model_specific_cache if cache else None,
             temperature=0,
             num_predict=32,
-            num_gpu=1,
+            num_gpu=-1,
             num_thread=4,
             repeat_penalty=1,
             top_p=0.9
