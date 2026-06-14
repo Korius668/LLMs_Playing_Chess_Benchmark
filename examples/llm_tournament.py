@@ -19,6 +19,7 @@ GEMMA = "gemma2:27b"
 QWEN = "qwen2.5:72b"
 LLAMA = "llama3.1:8b"
 PHI = "phi3:3.8b"
+LLAMA_CHESS = "llama3.1:8b-chess"
 
 AVAILABLE_MODELS = {
     "mixtral": MIXTRAL,
@@ -26,7 +27,8 @@ AVAILABLE_MODELS = {
     "qwen": QWEN,
     "llama": LLAMA,
     "phi": PHI,
-    "random": None
+    "random": None,
+    "llama-chess": LLAMA_CHESS
 }
 
 
@@ -53,21 +55,26 @@ def create_player(model_spec):
         # Ollama player
         return OllamaPlayer(model_name=model_name, name=name.upper(), cache=True)
 
-
-def run_tournament(models, tournament_type="round_robin", max_moves=200, verbose=False):
+def run_tournament(models, tournament_type="round_robin", max_moves=200, verbose=False, odd_strategy="bye"):
     """
     Run a chess tournament between specified models.
-    
-    Args:
-        models: List of model names (keys from AVAILABLE_MODELS)
-        tournament_type: "round_robin" or "single_elimination"
-        max_moves: Maximum moves per match
-        verbose: Print move-by-move information for each match
     """
     print(f"Initializing players for tournament...")
     
     # Create player objects
     players = [create_player(model) for model in models]
+    
+    # --- NOWA LOGIKA DLA NIEPARZYSTEJ LICZBY GRACZY ---
+    if tournament_type == "single_elimination" and len(players) % 2 != 0:
+        if odd_strategy == "add_random":
+            print("\n[!] Nieparzysta liczba graczy. Dodaję bota losowego (RANDOM_FILLER) do parzystości.")
+            # Wykorzystujemy krotkę (name, model_name) zdefiniowaną w Twoim create_player, 
+            # gdzie None dla model_name automatycznie tworzy RandomMovePlayer.
+            filler_player = create_player(("RANDOM_FILLER", None))
+            players.append(filler_player)
+        else:
+            print("\n[!] Nieparzysta liczba graczy. Używam strategii 'bye' (wolny los).")
+    # --------------------------------------------------
     
     print(f"Players: {[p.name for p in players]}")
     
@@ -95,7 +102,6 @@ def run_tournament(models, tournament_type="round_robin", max_moves=200, verbose
     print(f"\nTournament Winner: {tournament.get_winner()}")
     print(f"\nResults saved to: {tournament.results_dir}")
 
-
 def main():
     parser = ArgumentParser(
         description="Run a chess tournament between Ollama models."
@@ -103,7 +109,7 @@ def main():
     parser.add_argument(
         "-m", "--models",
         type=str,
-        default="llama,phi,mixtral,qwen,random",
+        default="llama,phi,mixtral,random",
         help="Comma-separated list of models to include in tournament. "
              "Available: mixtral, gemma, qwen, llama, phi, random. "
              "Default: llama,phi,mixtral,random"
@@ -115,6 +121,15 @@ def main():
         default="single_elimination",
         help="Tournament type. Default: single_elimination"
     )
+    # --- NOWA FLAGA ---
+    parser.add_argument(
+        "-s", "--odd-strategy",
+        type=str,
+        choices=["bye", "add_random"],
+        default="bye",
+        help="Strategia dla nieparzystej liczby graczy w fazie pucharowej. 'bye' daje wolny los, 'add_random' dorzuca bota. Default: bye"
+    )
+    # ------------------
     parser.add_argument(
         "-n", "--max-moves",
         type=int,
@@ -138,9 +153,9 @@ def main():
             print(f"Error: Unknown model '{model}'")
             print(f"Available models: {', '.join(AVAILABLE_MODELS.keys())}")
             sys.exit(1)
-    
-    # Run tournament
-    run_tournament(model_names, args.tournament_type, args.max_moves, args.verbose)
+            
+    # Run tournament - PRZEKAZANIE NOWEGO ARGUMENTU
+    run_tournament(model_names, args.tournament_type, args.max_moves, args.verbose, args.odd_strategy)
 
 
 if __name__ == "__main__":
