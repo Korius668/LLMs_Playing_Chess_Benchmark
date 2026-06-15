@@ -1,0 +1,7 @@
+rank,player,points,wins,draws,losses
+1,LLAMA,1.5,0,3,0
+2,PHI,1.0,0,2,0
+3,LLAMA-CHESS,1.0,0,2,0
+4,MIXTRAL,0.5,0,1,0
+5,GEMMA,0.5,0,1,0
+6,RANDOM,0.5,0,1,0

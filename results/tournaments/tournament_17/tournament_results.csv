@@ -1,0 +1,6 @@
+round,match_id,white_player,black_player,winner,result,termination_reason,total_moves
+1,R1_M1,LLAMA-CHESS,RANDOM,,draw,Move limit reached,200
+1,R1_M2,MIXTRAL,LLAMA,,draw,Stalemate or draw agreement,85
+1,R1_M3,PHI,GEMMA,,draw,Stalemate or draw agreement,57
+2,R2_M1,LLAMA-CHESS,LLAMA,,draw,Stalemate or draw agreement,33
+3,R3_M1,PHI,LLAMA,,draw,Stalemate or draw agreement,67
