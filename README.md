@@ -22,3 +22,8 @@
 
 5. Download FEN dataset
    https://www.kaggle.com/datasets/ffatty/350k-chess-positions-analyzed?resource=download
+
+
+# Selected games:
+
+<iframe src=".gif_games/gifs.html" width="100%" height="400px" frameborder="0"></iframe>
