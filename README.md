@@ -26,4 +26,11 @@
 
 # Selected games:
 
-<iframe src=".gif_games/gifs.html" width="100%" height="400px" frameborder="0"></iframe>
+  <div class="grid">
+    <img src="gif_games/match_T1_R1_M1.gif">       
+    <img src="gif_games/match_T2_R1_M1.gif">
+    <img src="gif_games/match_T3_R1_M1.gif">
+    <img src="gif_games/match_T1_R2_M1.gif">
+    <img src="gif_games/match_T2_R2_M1.gif">
+    <img src="gif_games/match_T3_R2_M1.gif">
+  </div>
